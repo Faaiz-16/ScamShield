@@ -1,0 +1,359 @@
+{
+  "generated_at": "2026-11-12T13:17:53+00:00",
+  "test_file": "/Users/faaizali/PROJECTS/ScamShield/data/processed/test.csv",
+  "network_checks": false,
+  "config": {
+    "suspicious_threshold": 0.35,
+    "scam_threshold": 0.65,
+    "rule_weight": 0.9,
+    "url_weight": 0.85,
+    "ml_weight": 0.6
+  },
+  "results": [
+    {
+      "classifier": "none",
+      "metrics": {
+        "samples": 25,
+        "likely_scam": {
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.8571,
+          "false_alarm_rate": 0.0
+        },
+        "flagged": {
+          "precision": 1.0,
+          "recall": 0.9167,
+          "f1": 0.9565,
+          "false_alarm_rate": 0.0
+        },
+        "distribution": {
+          "legit": {
+            "safe": 10,
+            "suspicious": 0,
+            "likely_scam": 0
+          },
+          "scam": {
+            "safe": 1,
+            "suspicious": 2,
+            "likely_scam": 9
+          },
+          "spam_not_scam": {
+            "safe": 3,
+            "suspicious": 0,
+            "likely_scam": 0
+          }
+        },
+        "threshold_sweep": [
+          {
+            "threshold": 0.4,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.45,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.5,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.55,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.6,
+            "precision": 1.0,
+            "recall": 0.8333,
+            "f1": 0.9091,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.65,
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.7,
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.75,
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.8,
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.85,
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.9,
+            "precision": 1.0,
+            "recall": 0.4167,
+            "f1": 0.5883,
+            "false_alarm_rate": 0.0
+          }
+        ],
+        "best_threshold": 0.55
+      }
+    },
+    {
+      "classifier": "baseline",
+      "metrics": {
+        "samples": 25,
+        "likely_scam": {
+          "precision": 1.0,
+          "recall": 0.9167,
+          "f1": 0.9565,
+          "false_alarm_rate": 0.0
+        },
+        "flagged": {
+          "precision": 0.8462,
+          "recall": 0.9167,
+          "f1": 0.88,
+          "false_alarm_rate": 0.1538
+        },
+        "distribution": {
+          "legit": {
+            "safe": 10,
+            "suspicious": 0,
+            "likely_scam": 0
+          },
+          "scam": {
+            "safe": 1,
+            "suspicious": 0,
+            "likely_scam": 11
+          },
+          "spam_not_scam": {
+            "safe": 1,
+            "suspicious": 2,
+            "likely_scam": 0
+          }
+        },
+        "threshold_sweep": [
+          {
+            "threshold": 0.4,
+            "precision": 0.8462,
+            "recall": 0.9167,
+            "f1": 0.88,
+            "false_alarm_rate": 0.1538
+          },
+          {
+            "threshold": 0.45,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.5,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.55,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.6,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.65,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.7,
+            "precision": 1.0,
+            "recall": 0.8333,
+            "f1": 0.9091,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.75,
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.8,
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.85,
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.9,
+            "precision": 1.0,
+            "recall": 0.5833,
+            "f1": 0.7368,
+            "false_alarm_rate": 0.0
+          }
+        ],
+        "best_threshold": 0.65
+      }
+    },
+    {
+      "classifier": "muril",
+      "metrics": {
+        "samples": 25,
+        "likely_scam": {
+          "precision": 1.0,
+          "recall": 0.9167,
+          "f1": 0.9565,
+          "false_alarm_rate": 0.0
+        },
+        "flagged": {
+          "precision": 0.8462,
+          "recall": 0.9167,
+          "f1": 0.88,
+          "false_alarm_rate": 0.1538
+        },
+        "distribution": {
+          "legit": {
+            "safe": 10,
+            "suspicious": 0,
+            "likely_scam": 0
+          },
+          "scam": {
+            "safe": 1,
+            "suspicious": 0,
+            "likely_scam": 11
+          },
+          "spam_not_scam": {
+            "safe": 1,
+            "suspicious": 2,
+            "likely_scam": 0
+          }
+        },
+        "threshold_sweep": [
+          {
+            "threshold": 0.4,
+            "precision": 0.9167,
+            "recall": 0.9167,
+            "f1": 0.9167,
+            "false_alarm_rate": 0.0769
+          },
+          {
+            "threshold": 0.45,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.5,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.55,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.6,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.65,
+            "precision": 1.0,
+            "recall": 0.9167,
+            "f1": 0.9565,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.7,
+            "precision": 1.0,
+            "recall": 0.8333,
+            "f1": 0.9091,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.75,
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.8,
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.85,
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "false_alarm_rate": 0.0
+          },
+          {
+            "threshold": 0.9,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6667,
+            "false_alarm_rate": 0.0
+          }
+        ],
+        "best_threshold": 0.65
+      }
+    }
+  ]
+}

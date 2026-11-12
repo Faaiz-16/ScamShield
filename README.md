@@ -18,8 +18,16 @@ generic spam filters are built for English and Western scam patterns. ScamShield
 second opinion in the user's own language, explains *why* a message is risky, and points to the
 right next step (never share an OTP, report at cybercrime.gov.in, call the 1930 helpline).
 
-> _Add recent figures on cyber fraud in India here, with sources (for example annual reports
-> of the National Crime Records Bureau or the Indian Cyber Crime Coordination Centre)._
+The scale of the problem:
+
+- Citizens lost **Rs 22,845.73 crore** to cyber fraud in 2024, about three times the
+  Rs 7,465.18 crore lost in 2023. In the same year, **22.68 lakh** cybercrime complaints were
+  registered on the National Cyber Crime Reporting Portal. (Ministry of Home Affairs, written
+  answer in the Lok Sabha, 22 July 2025, from Indian Cyber Crime Coordination Centre data;
+  [report](https://www.theweek.in/wire-updates/business/2025/07/22/del23-lsq-cyber-fraud.html).)
+- The National Crime Records Bureau's *Crime in India 2024* recorded **1,01,928** cybercrime
+  cases, up 17.9% from 2023, with **fraud the motive in 72.6%** of them
+  ([report](https://www.thequint.com/news/breaking-news/ncrb-2024-cybercrime-rises-overall-crime-drops)).
 
 ## Features
 
@@ -341,52 +349,74 @@ All settings are environment variables, read from `.env` (see [.env.example](.en
 
 ## Evaluation results
 
-> Fill these in after training on your collected data. Numbers from the synthetic seed sample
-> only show that the pipeline works and should not be reported. Generate the figures with
-> `python -m ml.evaluate` and `python -m ml.evaluate_verdict`; the full tables are in
+> **These figures come from the 100 synthetic messages in `data/seed_sample.csv` (25 of them in
+> the test set). They show that the pipeline works end to end. They are not a measure of
+> real-world accuracy: the test set is tiny and the confidence intervals are wide.**
+> Re-run `python -m ml.prepare_data`, `python -m ml.evaluate` and
+> `python -m ml.evaluate_verdict` after adding real labelled messages (see
+> [data/LABELING_GUIDE.md](data/LABELING_GUIDE.md)); the full tables are written to
 > `ml/results/comparison.md` and `ml/results/verdict_evaluation.md`.
 
-**Dataset**
+**Dataset (synthetic seed sample)**
 
 | | Scam | Legit | Spam (not scam) | Total |
 |---|---|---|---|---|
-| English | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Hindi | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Hinglish | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| English | 25 | 21 | 8 | 54 |
+| Hindi | 10 | 8 | 3 | 21 |
+| Hinglish | 13 | 9 | 3 | 25 |
+| **Total** | **48** | **38** | **14** | **100** |
 
-**Classifiers on the test set**
+Split 75 / 25, stratified by label and language.
+
+**Classifiers on the test set (25 messages)**
 
 | Model | Accuracy | Macro F1 (95% CI) | Scam precision | Scam recall | Legit flagged as scam | ms / message |
 |---|---|---|---|---|---|---|
-| TF-IDF + logistic regression | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| MuRIL (fine-tuned) | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| TF-IDF + logistic regression | 0.600 | 0.418 (0.269 to 0.618) | 0.556 | 0.833 | 50.0% | 0.3 |
+| MuRIL (fine-tuned) | 0.880 | 0.859 (0.554 to 1.000) | 0.800 | 1.000 | 20.0% | 30.5 |
+
+Timings are on CPU (Apple silicon).
 
 **Macro F1 by language**
 
-| Model | English | Hindi | Hinglish |
+| Model | English (14) | Hindi (7) | Hinglish (4) |
 |---|---|---|---|
-| TF-IDF + logistic regression | _TBD_ | _TBD_ | _TBD_ |
-| MuRIL (fine-tuned) | _TBD_ | _TBD_ | _TBD_ |
+| TF-IDF + logistic regression | 0.775 | 0.148 | 0.500 |
+| MuRIL (fine-tuned) | 1.000 | 0.867 | 0.500 |
+
+With 4 to 7 test messages per language, these per-language scores mostly reflect chance.
 
 **Complete system (verdicts)**
 
+Rules, link checks and the classifier together, with link checks offline. Spam and genuine
+messages both count as "not a scam".
+
 | Classifier | Likely Scam precision | Likely Scam recall | Non-scams called Likely Scam | Scams flagged (Suspicious or Likely Scam) |
 |---|---|---|---|---|
-| Rules and links only | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| With baseline | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| With MuRIL | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Rules and links only | 1.000 | 0.750 | 0.0% | 91.7% |
+| With baseline | 1.000 | 0.917 | 0.0% | 91.7% |
+| With MuRIL | 1.000 | 0.917 | 0.0% | 91.7% |
 
-**Confusion matrices**: _add `ml/results/baseline_confusion_matrix.png` and
-`ml/results/muril_confusion_matrix.png`._
+The classifier mainly lifts borderline scams from Suspicious to Likely Scam. The rules do most
+of the work, which is why the complete system scores well even though the baseline classifier
+alone is weak on this little data. The cost is false alarms: with a classifier, 15.4% of
+non-scams were marked Suspicious, compared with none for rules and links alone.
+
+**Confusion matrices**
+
+| TF-IDF + logistic regression | MuRIL (fine-tuned) |
+|---|---|
+| ![Baseline confusion matrix](docs/images/baseline_confusion_matrix.png) | ![MuRIL confusion matrix](docs/images/muril_confusion_matrix.png) |
 
 ## Screenshots
 
-> _Add screenshots to `docs/screenshots/` and link them here._
+| Checker (desktop) | Checker (mobile, Hindi) |
+|---|---|
+| ![Checker showing a Likely Scam result](docs/screenshots/checker-desktop.png) | ![Hindi result on a phone](docs/screenshots/checker-mobile-hindi.png) |
 
-- _Checker, desktop: result card for a Likely Scam message_
-- _Checker, mobile: Hindi result_
-- _Dashboard: scam types, verdicts and daily checks_
-- _Telegram bot: verdict with feedback and language buttons_
+| Dashboard | Telegram bot |
+|---|---|
+| ![Dashboard with scam types, verdicts and daily checks](docs/screenshots/dashboard.png) | ![Telegram bot verdict with feedback buttons](docs/screenshots/telegram-bot.png) |
 
 ## Privacy and security
 

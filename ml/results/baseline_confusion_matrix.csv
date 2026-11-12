@@ -1,0 +1,4 @@
+true\predicted,scam,legit,spam_not_scam
+scam,10,2,0
+legit,5,5,0
+spam_not_scam,3,0,0

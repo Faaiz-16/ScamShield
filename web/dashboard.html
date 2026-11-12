@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scam trends - ScamShield</title>
+    <meta
+      name="description"
+      content="The most common scam messages people in India have checked with ScamShield."
+    />
+    <meta name="theme-color" content="#0f3d5e" />
+    <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"
+      integrity="sha384-dug+JxfBvklEQdJ4AYuBBAIScUz0bVN73xpy273gcAwHjb3qI0fXmuYNaNfdyYJG"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      defer
+    ></script>
+    <script type="module" src="/static/js/dashboard.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container container--wide site-header__inner">
+        <a class="brand" href="/">
+          <svg class="brand__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2 4 5v6c0 5 3.4 9.5 8 11 4.6-1.5 8-6 8-11V5l-8-3Z" />
+            <path class="brand__check" d="m8.5 12 2.5 2.5 4.5-5" />
+          </svg>
+          <span>ScamShield</span>
+        </a>
+        <nav class="site-nav" data-i18n-aria-label="nav.label" aria-label="Main">
+          <a href="/" data-i18n="nav.check">Check a message</a>
+          <a href="/dashboard" aria-current="page" data-i18n="nav.dashboard">Scam trends</a>
+        </nav>
+        <div class="lang-toggle" role="group" aria-label="Language / भाषा">
+          <button type="button" data-lang="en" aria-pressed="true">English</button>
+          <button type="button" data-lang="hi" aria-pressed="false" lang="hi">हिंदी</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container container--wide">
+      <section class="intro intro--row">
+        <div>
+          <h1 data-i18n="dash.title">Scam trends</h1>
+          <p data-i18n="dash.subtitle">
+            What people have checked with ScamShield. Only anonymised counts are shown, never
+            message text.
+          </p>
+        </div>
+        <div class="segmented" role="group" data-i18n-aria-label="dash.range" aria-label="Time range">
+          <button type="button" data-days="7" aria-pressed="false">7</button>
+          <button type="button" data-days="30" aria-pressed="true">30</button>
+          <button type="button" data-days="90" aria-pressed="false">90</button>
+        </div>
+      </section>
+
+      <p id="dash-error" class="alert alert--error" role="alert" hidden></p>
+
+      <section class="stats" aria-live="polite">
+        <div class="stat card">
+          <p class="stat__label" data-i18n="dash.total">Messages checked</p>
+          <p class="stat__value" id="stat-total">-</p>
+          <p class="stat__detail" id="stat-range"></p>
+        </div>
+        <div class="stat stat--danger card">
+          <p class="stat__label" data-i18n="dash.scams">Likely scams</p>
+          <p class="stat__value" id="stat-scams">-</p>
+          <p class="stat__detail" id="stat-scams-share"></p>
+        </div>
+        <div class="stat stat--warn card">
+          <p class="stat__label" data-i18n="dash.suspicious">Suspicious</p>
+          <p class="stat__value" id="stat-suspicious">-</p>
+          <p class="stat__detail" id="stat-suspicious-share"></p>
+        </div>
+        <div class="stat stat--safe card">
+          <p class="stat__label" data-i18n="dash.feedback">Users agreed</p>
+          <p class="stat__value" id="stat-feedback">-</p>
+          <p class="stat__detail" id="stat-feedback-detail"></p>
+        </div>
+      </section>
+
+      <p id="dash-empty" class="card empty-state" data-i18n="dash.empty" hidden>
+        No messages have been checked in this period yet.
+      </p>
+
+      <section class="card chart-card" aria-labelledby="types-heading">
+        <h2 id="types-heading" data-i18n="dash.types">Most common scam types</h2>
+        <p id="types-empty" class="muted" data-i18n="dash.typesEmpty" hidden>
+          No scams recorded in this period.
+        </p>
+        <div class="chart chart--bars">
+          <canvas id="types-chart" role="img" data-i18n-aria-label="dash.typesChart"></canvas>
+        </div>
+        <details class="data-table">
+          <summary data-i18n="dash.showTable">Show as a table</summary>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" data-i18n="dash.colType">Scam type</th>
+                <th scope="col" data-i18n="dash.colCount">Count</th>
+              </tr>
+            </thead>
+            <tbody id="types-table"></tbody>
+          </table>
+        </details>
+      </section>
+
+      <div class="chart-grid">
+        <section class="card chart-card" aria-labelledby="verdicts-heading">
+          <h2 id="verdicts-heading" data-i18n="dash.verdicts">Verdicts</h2>
+          <div class="chart chart--doughnut">
+            <canvas id="verdicts-chart" role="img" data-i18n-aria-label="dash.verdictsChart"></canvas>
+          </div>
+          <details class="data-table">
+            <summary data-i18n="dash.showTable">Show as a table</summary>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" data-i18n="dash.colVerdict">Verdict</th>
+                  <th scope="col" data-i18n="dash.colCount">Count</th>
+                </tr>
+              </thead>
+              <tbody id="verdicts-table"></tbody>
+            </table>
+          </details>
+        </section>
+
+        <section class="card chart-card" aria-labelledby="daily-heading">
+          <h2 id="daily-heading" data-i18n="dash.daily">Checks per day</h2>
+          <div class="chart chart--line">
+            <canvas id="daily-chart" role="img" data-i18n-aria-label="dash.dailyChart"></canvas>
+          </div>
+          <details class="data-table">
+            <summary data-i18n="dash.showTable">Show as a table</summary>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" data-i18n="dash.colDate">Date</th>
+                  <th scope="col" data-i18n="dash.dailyTotal">Messages checked</th>
+                  <th scope="col" data-i18n="dash.dailyScams">Likely scams</th>
+                </tr>
+              </thead>
+              <tbody id="daily-table"></tbody>
+            </table>
+          </details>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container container--wide">
+        <p data-i18n="footer.disclaimer">
+          ScamShield gives an automated assessment and can make mistakes. When in doubt, contact
+          the organisation through its official website or app.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

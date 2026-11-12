@@ -1,0 +1,450 @@
+# Scam detection rules.
+#
+# Each rule fires when its `match` block is satisfied against the normalised
+# message text (Unicode NFKC, nukta removed, case-folded, whitespace collapsed):
+#
+#   any:  at least one pattern must match (optional when `all` is given)
+#   all:  a list of groups; every group needs at least one matching pattern
+#   none: if any of these patterns match, the rule is suppressed
+#
+# Patterns are Python regular expressions, matched case-insensitively.
+# Avoid \b next to Devanagari text: vowel signs are not word characters in
+# Python's regex engine, so word boundaries fall in the middle of Hindi words.
+#
+# severity is a weight in (0, 1]; higher means stronger evidence of a scam.
+# category must be one of the keys under `categories`.
+
+categories:
+  credential_theft:   {en: "OTP / PIN / password theft",   hi: "ओटीपी / पिन / पासवर्ड की चोरी"}
+  kyc_scam:           {en: "Fake KYC update",              hi: "फर्जी केवाईसी अपडेट"}
+  account_threat:     {en: "Account blocking threat",      hi: "खाता बंद करने की धमकी"}
+  upi_fraud:          {en: "UPI payment fraud",            hi: "यूपीआई भुगतान धोखाधड़ी"}
+  utility_scam:       {en: "Electricity bill scam",        hi: "बिजली बिल धोखाधड़ी"}
+  job_scam:           {en: "Fake job / task offer",        hi: "फर्जी नौकरी / टास्क ऑफर"}
+  lottery_scam:       {en: "Lottery / prize scam",         hi: "लॉटरी / इनाम धोखाधड़ी"}
+  customer_care_scam: {en: "Fake customer care",           hi: "फर्जी कस्टमर केयर"}
+  remote_access_scam: {en: "Remote access app scam",       hi: "रिमोट एक्सेस ऐप धोखाधड़ी"}
+  malware:            {en: "Malicious app download",       hi: "खतरनाक ऐप डाउनलोड"}
+  parcel_scam:        {en: "Parcel / courier scam",        hi: "पार्सल / कूरियर धोखाधड़ी"}
+  impersonation_scam: {en: "Police / agency impersonation", hi: "पुलिस / सरकारी एजेंसी बनकर धोखाधड़ी"}
+  tax_refund_scam:    {en: "Fake income tax refund",       hi: "फर्जी आयकर रिफंड"}
+  reward_scam:        {en: "Reward points scam",           hi: "रिवॉर्ड पॉइंट धोखाधड़ी"}
+  telecom_scam:       {en: "SIM / mobile number scam",     hi: "सिम / मोबाइल नंबर धोखाधड़ी"}
+  investment_scam:    {en: "Investment / trading scam",    hi: "निवेश / ट्रेडिंग धोखाधड़ी"}
+  loan_scam:          {en: "Instant loan scam",            hi: "इंस्टेंट लोन धोखाधड़ी"}
+  challan_scam:       {en: "Fake traffic challan",         hi: "फर्जी ट्रैफिक चालान"}
+  freebie_scam:       {en: "Fake scheme / free gift",      hi: "फर्जी योजना / मुफ्त उपहार"}
+  phishing_link:      {en: "Phishing link",                hi: "फ़िशिंग लिंक"}
+  generic:            {en: "General scam signal",          hi: "सामान्य धोखाधड़ी संकेत"}
+
+# Reusable pattern lists, referenced from rules through YAML anchors.
+shared:
+  share_negations: &share_negations
+    # Genuine bank messages warn users *not* to share credentials.
+    - '(do ?n[o'']?t|don''?t|never|not to|nor)\s(\w+\s){0,2}(share|disclose|tell|give|reveal|send)'
+    - '(never|not|will not|won''?t|does not|doesn''?t)\s(\w+\s){0,2}(ask|call|request)'
+    - '(share|bata\w*|bhej\w*|disclose)\s(\w+\s){0,2}(na|mat|nahi|nahin)\b'
+    - '\b(na|mat|kabhi)\s(\w+\s){0,1}(share|bata\w*|bhej\w*)'
+    - '(साझा|शेयर|बताएं|बताये|बताए|दें|भेजें)\s?(न|नहीं|मत)'
+    - '(न|नहीं|मत|कभी)\s?(साझा|शेयर|बताएं|बताये|बताए|दें|भेजें)'
+
+rules:
+  # --- Credential theft ------------------------------------------------------
+  - id: OTP_SHARE_REQUEST
+    category: credential_theft
+    severity: 0.95
+    reason:
+      en: "The message asks you to share an OTP. Banks and payment apps never ask for your OTP."
+      hi: "संदेश में ओटीपी साझा करने को कहा गया है। बैंक और पेमेंट ऐप कभी ओटीपी नहीं मांगते।"
+    match:
+      any:
+        - '\b(share|send|tell|provide|give|forward|reply with|read out|confirm|say)\b.{0,30}\b(o\.?\s?t\.?\s?p|one[- ]time password|verification code)\b'
+        - '\b(o\.?\s?t\.?\s?p|verification code)\b.{0,30}\b(bata\w*|bhej\w*|share kar\w*|forward kar\w*|de ?do|de ?dein|send kar\w*|bol\w*)\b'
+        - 'ओटीपी.{0,30}(बताएं|बताये|बताए|बताइए|बताओ|भेजें|भेजो|शेयर करें|दें|दीजिए)'
+      none: *share_negations
+
+  - id: PIN_CVV_PASSWORD_REQUEST
+    category: credential_theft
+    severity: 0.95
+    reason:
+      en: "The message asks for your PIN, CVV or password. No genuine bank or app will ever ask for these."
+      hi: "संदेश में आपका पिन, सीवीवी या पासवर्ड मांगा गया है। कोई असली बैंक या ऐप इन्हें कभी नहीं मांगता।"
+    match:
+      any:
+        - '\b(share|send|tell|provide|give|confirm|reply with)\b.{0,30}\b(upi pin|m-?pin|atm pin|card pin|pin number|cvv|cvc|password|passcode|net ?banking password)\b'
+        - '\b(upi pin|m-?pin|atm pin|pin|cvv|password)\b.{0,25}\b(bata\w*|bhej\w*|share kar\w*|de ?do|de ?dein)\b'
+        - '(पिन|सीवीवी|पासवर्ड).{0,25}(बताएं|बताये|बताए|बताइए|बताओ|भेजें|भेजो|शेयर करें|दें|दीजिए)'
+      none: *share_negations
+
+  - id: PERSONAL_DETAILS_REQUEST
+    category: credential_theft
+    severity: 0.7
+    reason:
+      en: "The message asks for bank, card or identity details, which scammers use to take over accounts."
+      hi: "संदेश में बैंक, कार्ड या पहचान की जानकारी मांगी गई है, जिसका उपयोग ठग खाते पर कब्जा करने के लिए करते हैं।"
+    match:
+      any:
+        - '\b(share|send|provide|update|confirm|verify|submit|reply with)\b.{0,25}\b(bank (account|details)|account (number|no|details)|(debit |credit |atm )?card (number|details|no)|aadhaa?r (number|no|details)|pan (number|no|details)|date of birth|login (id|details)|net ?banking (details|credentials|id))\b'
+        - '\b(account|card|aadhaa?r|pan) (number|no|details)\b.{0,20}\b(bhej\w*|bata\w*|share kar\w*|de ?do|de ?dein)\b'
+        - '(खाता संख्या|खाता नंबर|कार्ड नंबर|आधार नंबर|बैंक विवरण).{0,20}(भेजें|बताएं|बताये|दें|शेयर)'
+      none: *share_negations
+
+  # --- Threats and urgency ---------------------------------------------------
+  - id: ACCOUNT_BLOCK_THREAT
+    category: account_threat
+    severity: 0.7
+    reason:
+      en: "It threatens that your account or card will be blocked, a common pressure tactic."
+      hi: "इसमें आपका खाता या कार्ड बंद करने की धमकी दी गई है, जो दबाव बनाने की आम चाल है।"
+    match:
+      any:
+        - '\b(account|a/c|acct|card|net ?banking|yono|wallet|upi id|paytm|bank)\b.{0,40}\b(will be|has been|is|shall be|getting|to be|may be)\s(temporarily\s)?(blocked|suspended|deactivated|frozen|freezed|closed|terminated|disabled|locked|on hold|restricted)\b'
+        - '\b(account|khata|khaata|card|a/c)\b.{0,30}\b(band|bandh|block|freeze|suspend)\s(ho|kar)\s?(jayega|jaega|jaayega|jayegi|diya jayega|denge|dia jayega)\b'
+        - '(खाता|खाते|अकाउंट|कार्ड).{0,30}(बंद|ब्लॉक|निलंबित|फ्रीज).{0,15}(हो जाएगा|हो जायेगा|कर दिया जाएगा|हो जाएगी|कर दिया जायेगा)'
+      none:
+        - '\b(as|on) (per )?your request'
+        - 'आपके अनुरोध'
+
+  - id: URGENCY_PRESSURE
+    category: generic
+    severity: 0.25
+    reason:
+      en: "It pushes you to act immediately, so you have no time to check whether it is genuine."
+      hi: "यह आपको तुरंत कदम उठाने के लिए दबाव डालता है ताकि आप जांच न कर सकें।"
+    match:
+      any:
+        - '\b(within|in) (1|2|12|24|48) ?(hours?|hrs?)\b'
+        - '\b(immediately|urgent(ly)?|right now|asap|last (date|day|chance|warning|reminder)|final (notice|warning|reminder)|expires? today|today itself|before midnight|tonight)\b'
+        - '\b(turant|turunt|tatkal|jaldi se|abhi ke abhi|aaj hi|fauran|foran)\b'
+        - '(तुरंत|तत्काल|फौरन|आज ही|24 घंटे|अंतिम चेतावनी|अंतिम मौका|आखिरी मौका)'
+
+  - id: DIGITAL_ARREST_THREAT
+    category: impersonation_scam
+    severity: 0.9
+    reason:
+      en: "It claims police or a government agency will arrest you. Real agencies never threaten arrest or demand money over phone or chat."
+      hi: "इसमें पुलिस या सरकारी एजेंसी द्वारा गिरफ्तारी की धमकी है। असली एजेंसियां फोन या चैट पर गिरफ्तारी की धमकी देकर पैसे नहीं मांगतीं।"
+    match:
+      any:
+        - '\b(digital arrest|arrest warrant|non[- ]bailable|fir (has been |is )?(registered|filed|lodged))\b'
+        - '\b(cbi|police|crime branch|cyber cell|narcotics|ncb|customs|enforcement directorate|trai|ed officer)\b.{0,80}\b(arrest\w*|warrant|illegal|drugs|money laundering|legal action)\b'
+        - '\b(drugs|narcotics|mdma|illegal items|fake passports?)\b.{0,60}\b(parcel|package|courier|shipment|aadhaa?r)\b'
+        - '\b(giraftar|giraftaar|griftar|arrest ho jao?ge)\w*'
+        - '(गिरफ्तार|गिरफ्तारी|वारंट|डिजिटल अरेस्ट)'
+
+  # --- KYC and identity ------------------------------------------------------
+  - id: KYC_UPDATE
+    category: kyc_scam
+    severity: 0.65
+    reason:
+      en: "It asks you to update KYC through a message. Banks ask for KYC updates only at the branch or inside their official app."
+      hi: "इसमें संदेश के जरिए केवाईसी अपडेट करने को कहा गया है। बैंक केवाईसी केवल शाखा या आधिकारिक ऐप में अपडेट करवाते हैं।"
+    match:
+      any:
+        - '\b(e-?kyc|kyc)\b.{0,40}\b(update\w*|expired?|pending|incomplete|suspend\w*|verify|verification|re-?kyc|not (done|updated|completed)|block\w*|due)\b'
+        - '\b(update|complete|verify|renew)\w*\b.{0,20}\b(e-?kyc|kyc)\b'
+        - '\bkyc\b.{0,30}\b(karwa\w*|karva\w*|kara\w*|update kar\w*|pura kar\w*|poora kar\w*)'
+        - '(केवाईसी|के.वाई.सी).{0,40}(अपडेट|अद्यतन|समाप्त|लंबित|पूरा|सत्यापन)'
+      none:
+        - '\bvisit (your |the )?(nearest |home )?branch'
+        - 'शाखा में'
+
+  - id: PAN_AADHAAR_UPDATE
+    category: kyc_scam
+    severity: 0.5
+    reason:
+      en: "It asks you to update or link PAN or Aadhaar through a message, a common phishing lure."
+      hi: "इसमें संदेश के जरिए पैन या आधार अपडेट या लिंक करने को कहा गया है, जो फ़िशिंग का आम तरीका है।"
+    match:
+      any:
+        - '\b(pan|pan card|aadhaa?r|adhar)\b.{0,40}\b(update|expired?|blocked|block|suspend\w*|deactivat\w*|not linked|link now)\b'
+        - '\b(pan|aadhaa?r|adhar)\b.{0,30}\b(update kar\w*|link kar\w*|band ho)'
+        - '(पैन|आधार).{0,30}(अपडेट|लिंक करें|बंद|ब्लॉक)'
+
+  # --- UPI fraud -------------------------------------------------------------
+  - id: UPI_PIN_TO_RECEIVE
+    category: upi_fraud
+    severity: 0.95
+    reason:
+      en: "It asks you to enter your UPI PIN to receive money. A UPI PIN is only ever needed to send money, never to receive it."
+      hi: "इसमें पैसे प्राप्त करने के लिए यूपीआई पिन डालने को कहा गया है। पिन केवल पैसे भेजने के लिए लगता है, पाने के लिए कभी नहीं।"
+    match:
+      any:
+        - '\b(enter|put|type|use|daal\w*|dal\w*|laga\w*)\b.{0,20}\bpin\b.{0,40}\b(receive|get|credit\w*|claim|accept|refund|cashback|prapt|milega|milenge)\b'
+        - '\b(receive|get|claim|accept)\b.{0,40}\b(enter|daal\w*|dal\w*)\b.{0,20}\bpin\b'
+        - '\bpin\b.{0,30}\b(to|for) (receive|get|claim|accept)\b'
+        - '\b(paise?|payment|refund|cashback)\b.{0,30}\b(receive|lene|paane|milenge|milega)\b.{0,30}\bpin\b'
+        - '\bpin (daal|dal|enter kar)\w*\b.{0,30}\b(paise|payment|refund|cashback)\b'
+        - '(पैसे|राशि|रकम|रिफंड|कैशबैक).{0,40}(प्राप्त|पाने|लेने).{0,40}पिन'
+        - 'पिन.{0,40}(प्राप्त करने|पाने के लिए|लेने के लिए)'
+
+  - id: QR_SCAN_TO_RECEIVE
+    category: upi_fraud
+    severity: 0.85
+    reason:
+      en: "It asks you to scan a QR code to receive money. Scanning a QR code is for paying, so this takes money out of your account."
+      hi: "इसमें पैसे पाने के लिए क्यूआर कोड स्कैन करने को कहा गया है। क्यूआर स्कैन करने से पैसे आपके खाते से कटते हैं।"
+    match:
+      any:
+        - '\bscan\b.{0,30}\b(qr|code)\b.{0,40}\b(receive|get|credit\w*|claim|refund|prize|cashback|reward)\b'
+        - '\bqr\b.{0,30}\bscan kar\w*\b.{0,40}\b(paise|payment|milenge|milega|refund|cashback)\b'
+        - '(क्यूआर|qr).{0,30}स्कैन.{0,40}(पैसे|प्राप्त|मिलेंगे|रिफंड|कैशबैक)'
+
+  - id: WRONG_TRANSFER_REFUND
+    category: upi_fraud
+    severity: 0.6
+    reason:
+      en: "It claims money was sent to you by mistake and asks you to return it. Check your bank statement directly; this is often a setup for a fake collect request."
+      hi: "इसमें दावा है कि गलती से आपको पैसे भेजे गए और लौटाने को कहा गया है। सीधे बैंक स्टेटमेंट जांचें; यह अक्सर फर्जी कलेक्ट रिक्वेस्ट की चाल होती है।"
+    match:
+      any:
+        - '\b(sent|transferred|paid|credited)\b.{0,30}\b(by mistake|mistakenly|wrongly|accidentally|galti se)\b'
+        - '\bgalti se\b.{0,40}\b(paise|payment|transfer|bhej\w*|aa gaye)\b'
+        - 'गलती से.{0,40}(पैसे|भेज|ट्रांसफर|आ गए)'
+
+  # --- Utility and telecom ---------------------------------------------------
+  - id: ELECTRICITY_DISCONNECTION
+    category: utility_scam
+    severity: 0.75
+    reason:
+      en: "It threatens to cut your electricity. Power companies do not send disconnection warnings asking you to call a personal number or click a link."
+      hi: "इसमें बिजली काटने की धमकी दी गई है। बिजली कंपनियां निजी नंबर पर कॉल करने या लिंक पर क्लिक करने को नहीं कहतीं।"
+    match:
+      all:
+        - ['\b(electricity|power supply|electric connection|bijli|bijlee|light connection|eb bill)\b', '(बिजली|विद्युत)']
+        - ['\b(disconnect\w*|cut off|cut|kaat\w*|kat jayegi|kat jaega|band ho\w*|discontinued)\b', '(कट|काट|बंद|डिस्कनेक्ट)']
+      none:
+        - '\b(maintenance|scheduled (power )?(shutdown|outage)|planned outage)\b'
+        - '(रखरखाव|शटडाउन)'
+
+  - id: ELECTRICITY_BILL_NOT_UPDATED
+    category: utility_scam
+    severity: 0.6
+    reason:
+      en: "It claims your previous bill was not updated, a standard line in electricity bill scams."
+      hi: "इसमें दावा है कि आपका पिछला बिल अपडेट नहीं हुआ, जो बिजली बिल धोखाधड़ी की आम लाइन है।"
+    match:
+      any:
+        - '\b(previous|last) (month|months)\W{0,2}s?\b.{0,20}\bbill\b.{0,25}\b(not|nahi|nahin) (been )?(updated|update|paid|jama)'
+        - '\b(electricity|bijli) (officer|office|department)\b.{0,40}\b(call|contact|sampark)'
+        - '(पिछले|पिछला) (महीने|माह).{0,20}बिल.{0,20}(अपडेट नहीं|जमा नहीं)'
+        - '(बिजली|विद्युत) (अधिकारी|विभाग).{0,40}(संपर्क|कॉल)'
+
+  - id: SIM_BLOCK_THREAT
+    category: telecom_scam
+    severity: 0.65
+    reason:
+      en: "It threatens to block your SIM or mobile number, or asks you to switch to eSIM through a message, which is used to hijack phone numbers."
+      hi: "इसमें सिम या मोबाइल नंबर बंद करने की धमकी है या संदेश के जरिए ई-सिम में बदलने को कहा गया है, जिससे नंबर हाईजैक किया जाता है।"
+    match:
+      any:
+        - '\b(sim|sim card|mobile (number|service|connection))\b.{0,40}\b(blocked|deactivated|suspended|disconnected|barred|band ho\w*)\b'
+        - '\b(trai|dot|department of telecom\w*)\b.{0,60}\b(block\w*|disconnect\w*|deactivat\w*|suspend\w*)\b'
+        - '\be-?sim\b.{0,30}\b(activate|upgrade|convert|switch)\w*'
+        - 'सिम.{0,30}(बंद|ब्लॉक)'
+
+  # --- Jobs and easy money ---------------------------------------------------
+  - id: JOB_REGISTRATION_FEE
+    category: job_scam
+    severity: 0.85
+    reason:
+      en: "It offers a job but asks you to pay a registration or security fee. Genuine employers never charge you to hire you."
+      hi: "इसमें नौकरी का ऑफर है लेकिन पंजीकरण या सुरक्षा शुल्क मांगा गया है। असली कंपनियां नौकरी के लिए पैसे नहीं लेतीं।"
+    match:
+      all:
+        - ['\b(jobs?|vacancy|vacancies|hiring|recruitment|work from home|wfh|part[- ]time|naukri|naukari|offer letter|selected for|interview)\b', '(नौकरी|भर्ती|जॉब|वैकेंसी)']
+        - ['\b(registration (fee|charge|amount)|security (deposit|fee|amount)|joining (fee|kit)|processing fee|training fee|refundable (fee|deposit|amount)|fees? (bhar\w*|jama|de\w*))\b', '\bpay (rs\.?|inr|₹)\s?\d', '(शुल्क|फीस|सिक्योरिटी)']
+
+  - id: EASY_MONEY_TASK
+    category: job_scam
+    severity: 0.7
+    reason:
+      en: "It promises easy money for simple tasks like liking videos or rating products, a common task-based scam."
+      hi: "इसमें वीडियो लाइक करने या रेटिंग देने जैसे आसान कामों के लिए पैसे का वादा है, जो टास्क आधारित धोखाधड़ी है।"
+    match:
+      any:
+        - '\b(earn|income|kamaye\w*|kamao|kamai)\b.{0,30}\d[\d,]*.{0,25}\b(daily|per day|a day|weekly|per week|roz|rozana|har din|per task)\b'
+        - '\b(like|subscribe|rate|review|follow)\b.{0,40}\b(youtube|videos?|hotels?|products?|pages?|instagram|posts?)\b.{0,40}\b(earn|paid|income|kamaye\w*|paise|commission)\b'
+        - '\bghar baithe\b.{0,30}\b(kamaye\w*|kamao|kamai|earn|income|paise)\b'
+        - 'घर बैठे.{0,30}(कमाएं|कमाई|कमाये|पैसे)'
+        - '(रोज|रोजाना|प्रतिदिन).{0,20}\d[\d,]*.{0,20}(कमाएं|कमाई|कमाये)'
+
+  # --- Lottery and prizes ----------------------------------------------------
+  - id: LOTTERY_PRIZE_CLAIM
+    category: lottery_scam
+    severity: 0.75
+    reason:
+      en: "It says you have won a lottery or prize you never entered. Unexpected winnings are a classic scam."
+      hi: "इसमें कहा गया है कि आपने ऐसी लॉटरी या इनाम जीता है जिसमें आपने भाग ही नहीं लिया। अचानक इनाम मिलना पुरानी ठगी है।"
+    match:
+      any:
+        - '\b(you|u)\b (have |hv |''ve )?(won|been selected as (the )?winner|are (the )?(lucky )?winner)\b'
+        - '\bcongrat\w*\b.{0,60}\b(won|winner|prize|lottery|lucky draw|jackpot|lakh|crore)\b'
+        - '\b(lottery|lucky draw|jackpot|lucky winner|bumper prize|prize money|cash prize)\b'
+        - '\b(aap|apne|aapne)\b.{0,30}\b(jeeta|jeete|jite|jeet gaye|jeeti|jeet liya)\b'
+        - '\b(inaam|inam)\b'
+        - '(जीता है|जीते हैं|जीत लिया|विजेता|इनाम|लॉटरी|लकी ड्रा)'
+
+  - id: KBC_LOTTERY
+    category: lottery_scam
+    severity: 0.85
+    reason:
+      en: "It uses KBC or a celebrity name to promise a big cash prize. KBC never runs lotteries over SMS or WhatsApp."
+      hi: "इसमें केबीसी या किसी सेलिब्रिटी के नाम से बड़े इनाम का वादा है। केबीसी कभी एसएमएस या व्हाट्सएप पर लॉटरी नहीं चलाता।"
+    match:
+      any:
+        - '\b(kbc|kaun banega crorepati|kaun banega karodpati|jio lottery|jio lucky draw|whatsapp lottery|amitabh bachchan)\b'
+        - '(कौन बनेगा करोडपति|केबीसी)'
+
+  - id: PRIZE_PROCESSING_FEE
+    category: lottery_scam
+    severity: 0.85
+    reason:
+      en: "It asks you to pay a fee or tax to release a prize. Real prizes never require you to pay first."
+      hi: "इसमें इनाम पाने के लिए शुल्क या टैक्स भरने को कहा गया है। असली इनाम के लिए पहले पैसे नहीं देने पड़ते।"
+    match:
+      all:
+        - ['\b(won|winner|prize|lottery|lucky draw|inaam|inam|jeet\w*)\b', '(इनाम|लॉटरी|जीत|विजेता)']
+        - ['\b(processing (fee|charge)|tax|gst|registration (fee|charge)|delivery charges?|transfer (fee|charge)|clearance (fee|charge)|pay (rs\.?|inr|₹)|deposit|shulk)\b', '(शुल्क|टैक्स|जमा करें|जमा करना)']
+
+  - id: REWARD_POINTS_EXPIRY
+    category: reward_scam
+    severity: 0.5
+    reason:
+      en: "It pressures you to redeem expiring reward points through a link, a common way to steal card details."
+      hi: "इसमें लिंक के जरिए समाप्त हो रहे रिवॉर्ड पॉइंट भुनाने का दबाव है, जो कार्ड की जानकारी चुराने का आम तरीका है।"
+    match:
+      all:
+        - ['\b(reward|loyalty|credit card|bonus) points?\b', '\bpoints? (worth|of) (rs\.?|inr|₹)', '(रिवॉर्ड|रिवार्ड) (पॉइंट|प्वाइंट)']
+        - ['\b(expir\w*|redeem\w*|lapse|claim)\b', '(समाप्त|रिडीम|एक्सपायर)']
+
+  - id: FREE_GIFT_OR_SCHEME
+    category: freebie_scam
+    severity: 0.55
+    reason:
+      en: "It promises a free gift or government scheme benefit through a link. Government schemes are only applied for on official .gov.in websites."
+      hi: "इसमें लिंक के जरिए मुफ्त उपहार या सरकारी योजना का लाभ देने का वादा है। सरकारी योजनाओं के लिए केवल आधिकारिक .gov.in वेबसाइट पर आवेदन होता है।"
+    match:
+      any:
+        - '\bfree (recharge|laptop|data|gift|iphone|scooty|mobile|smartphone|tablet)\b'
+        - '\b(yojana|scheme|subsidy)\b.{0,40}\b(register|apply|click|link|claim)\w*'
+        - '\bmuft\b.{0,20}\b(recharge|laptop|data|gift|mobile)\b'
+        - '(मुफ्त|फ्री).{0,20}(रिचार्ज|लैपटॉप|उपहार|मोबाइल)'
+        - 'योजना.{0,40}(पंजीकरण|रजिस्टर|क्लिक|लिंक)'
+
+  # --- Impersonation of services ---------------------------------------------
+  - id: FAKE_CUSTOMER_CARE
+    category: customer_care_scam
+    severity: 0.7
+    reason:
+      en: "It gives a personal mobile number as a customer care or helpline number. Banks and companies use official toll-free numbers listed on their websites."
+      hi: "इसमें कस्टमर केयर या हेल्पलाइन के रूप में निजी मोबाइल नंबर दिया गया है। बैंक और कंपनियां अपनी वेबसाइट पर दिए आधिकारिक टोल-फ्री नंबर का उपयोग करती हैं।"
+    match:
+      any:
+        - '\b(customer care|customer support|customer service|helpline|help line|toll ?free|support team|complaint (number|no)|care (number|no)|executive|officer)\b.{0,40}((?<!\d)(\+?91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?!\d)|<phone>)'
+        - '(ग्राहक सेवा|हेल्पलाइन|कस्टमर केयर|अधिकारी).{0,40}((?<!\d)(\+?91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?!\d)|<phone>)'
+
+  - id: REMOTE_ACCESS_APP
+    category: remote_access_scam
+    severity: 0.85
+    reason:
+      en: "It asks you to install a screen-sharing app such as AnyDesk or TeamViewer, which lets a scammer control your phone."
+      hi: "इसमें एनीडेस्क या टीमव्यूअर जैसा स्क्रीन शेयरिंग ऐप डाउनलोड करने को कहा गया है, जिससे ठग आपका फोन नियंत्रित कर सकता है।"
+    match:
+      any:
+        - '\b(anydesk|any desk|teamviewer|team viewer|quick ?support|rustdesk|airdroid|ultraviewer|screen ?share|screen sharing app)\b'
+        - '(एनीडेस्क|टीमव्यूअर|स्क्रीन शेयर)'
+
+  - id: APK_DOWNLOAD
+    category: malware
+    severity: 0.8
+    reason:
+      en: "It asks you to install an app from a link or an APK file. Apps from outside the Play Store can steal your OTPs and banking data."
+      hi: "इसमें लिंक या एपीके फाइल से ऐप इंस्टॉल करने को कहा गया है। प्ले स्टोर के बाहर के ऐप आपके ओटीपी और बैंक डेटा चुरा सकते हैं।"
+    match:
+      any:
+        - '\.apk\b'
+        - '\b(download|install)\b.{0,30}\b(apk|(this |the )?app from (this|the|below|given) link)\b'
+        - '\b(apk|app)\b.{0,30}\b(download|install) (kare|karein|karo|kijiye|kar le)\b'
+        - '(एपीके|ऐप|एप).{0,30}(डाउनलोड|इंस्टॉल)'
+      none:
+        - '\b(play ?store|app ?store)\b'
+        - 'प्ले स्टोर'
+
+  - id: PARCEL_DELIVERY_ISSUE
+    category: parcel_scam
+    severity: 0.6
+    reason:
+      en: "It claims a parcel is held or undelivered and asks you to act through a link or payment, a common courier scam."
+      hi: "इसमें दावा है कि आपका पार्सल रुका हुआ है और लिंक या भुगतान के जरिए कार्रवाई करने को कहा गया है, जो कूरियर धोखाधड़ी है।"
+    match:
+      all:
+        - ['\b(parcel|courier|shipment|package|consignment|india ?post|fedex|dhl|bluedart)\b', '(पार्सल|कूरियर|शिपमेंट)']
+        - ['\b(on hold|held|pending|undelivered|could not be delivered|unable to deliver|incomplete address|address (is )?(incomplete|invalid|wrong)|update (your )?address|customs|seized|confiscated|re-?delivery|redeliver)\b', '(रोका|अधूरा पता|नहीं पहुंच|पता अपडेट)']
+        - ['\b(click|link|https?|www|visit|pay|fee|charge|within|update|confirm)\b', '(क्लिक|लिंक|भुगतान|शुल्क)']
+
+  - id: INCOME_TAX_REFUND
+    category: tax_refund_scam
+    severity: 0.75
+    reason:
+      en: "It offers an income tax refund that needs you to verify details through a link. The tax department credits refunds directly and never asks for this."
+      hi: "इसमें आयकर रिफंड का लालच देकर लिंक पर जानकारी सत्यापित करने को कहा गया है। आयकर विभाग सीधे रिफंड भेजता है और ऐसा कभी नहीं मांगता।"
+    match:
+      any:
+        - '\b(income ?tax|it dept|it department|itr|tax) refund\b.{0,60}\b(approved|sanctioned|eligible|click|verify|update|submit|claim|link)\b'
+        - '\b(eligible|approved)\b.{0,30}\b(income ?tax|tax) refund\b'
+        - '(आयकर|इनकम टैक्स).{0,30}(रिफंड|वापसी).{0,60}(स्वीकृत|क्लिक|लिंक|सत्यापित|प्राप्त करें)'
+
+  - id: TRAFFIC_CHALLAN
+    category: challan_scam
+    severity: 0.5
+    reason:
+      en: "It asks you to pay a traffic challan. Pay challans only on the official echallan.parivahan.gov.in website."
+      hi: "इसमें ट्रैफिक चालान भरने को कहा गया है। चालान केवल आधिकारिक echallan.parivahan.gov.in वेबसाइट पर भरें।"
+    match:
+      all:
+        - ['\b(e-?challan|challan|traffic (fine|violation|police))\b', 'चालान']
+        - ['\b(pay|click|link|pending|unpaid|due|court|licen[cs]e|suspend\w*)\b', '(भुगतान|लंबित|क्लिक|लिंक)']
+
+  # --- Money offers ----------------------------------------------------------
+  - id: INVESTMENT_GUARANTEED_RETURNS
+    category: investment_scam
+    severity: 0.75
+    reason:
+      en: "It promises guaranteed or unrealistically high returns. No genuine investment can guarantee profits."
+      hi: "इसमें गारंटीड या बहुत ज्यादा मुनाफे का वादा है। कोई भी असली निवेश मुनाफे की गारंटी नहीं दे सकता।"
+    match:
+      any:
+        - '\b(double (your|ur) money|money doubl\w*|guaranteed (returns?|profits?|income)|assured returns?|risk[- ]free (returns?|profits?|investment))\b'
+        - '\b\d{1,3} ?% (daily|weekly|monthly|per day|per week) (returns?|profits?)\b'
+        - '\b(stock|share market|trading|crypto|bitcoin|usdt|forex|ipo)\b.{0,60}\b(vip group|guaranteed|100% profit|sure ?shot)\b'
+        - '\b(paise?|paisa|money) (double|dugna|dugne)\b'
+        - '(पैसा|पैसे|रकम) (दोगुना|दुगना|डबल)'
+        - 'गारंटीड (रिटर्न|मुनाफा)'
+
+  - id: INSTANT_LOAN_OFFER
+    category: loan_scam
+    severity: 0.65
+    reason:
+      en: "It offers an instant loan without checks or asks for an upfront fee. Licensed lenders do not work this way."
+      hi: "इसमें बिना जांच के तुरंत लोन या पहले शुल्क मांगा गया है। लाइसेंस प्राप्त ऋणदाता ऐसे काम नहीं करते।"
+    match:
+      any:
+        - '\b(instant|pre-?approved|guaranteed)\b (personal )?loan\b.{0,60}\b(without|no)\b (any )?(documents?|cibil|credit check|income proof|verification)\b'
+        - '\bloan\b.{0,40}\b(approved|sanctioned)\b.{0,60}\b(pay|fee|charges?|deposit)\b'
+        - '\bbina\b (kisi )?(document|documents|kagaz|cibil)\b.{0,20}\bloan\b'
+        - 'बिना.{0,20}(दस्तावेज|कागज|सिबिल).{0,20}लोन'
+        - 'लोन.{0,40}(स्वीकृत|मंजूर).{0,40}(शुल्क|फीस)'
+
+  # --- Generic signals -------------------------------------------------------
+  - id: LINK_CLICK_PROMPT
+    category: generic
+    severity: 0.3
+    reason:
+      en: "It pushes you to click a link. Links in unexpected messages often lead to fake websites."
+      hi: "इसमें लिंक पर क्लिक करने का दबाव है। अनचाहे संदेशों के लिंक अक्सर नकली वेबसाइट पर ले जाते हैं।"
+    match:
+      any:
+        - '\b(click|tap|open|visit)\b.{0,20}\b(link|url)\b'
+        - '\b(link|url)\b (par|pe|per) (click|tap)\b'
+        - 'लिंक.{0,20}(क्लिक|खोलें|टैप)'

@@ -1,0 +1,10 @@
+# Extra dependencies for training and serving the MuRIL model.
+# The API and baseline model only need requirements.txt.
+#
+# CPU-only machines can install a smaller torch build first:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+-r requirements.txt
+
+# 2.6+ is needed to load MuRIL's pytorch_model.bin with the safe weights_only loader.
+torch>=2.6
+transformers>=4.44

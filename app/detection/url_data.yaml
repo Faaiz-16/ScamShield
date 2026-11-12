@@ -1,0 +1,216 @@
+# Reference data for the URL analyzer. Edit this file to maintain the lists;
+# no code changes are needed.
+
+# Domain suffixes whose registration is restricted to verified owners.
+# Any host under these is treated as official.
+trusted_suffixes:
+  - gov.in
+  - nic.in
+  - bank.in   # RBI-mandated domain for Indian banks
+  - fin.in    # RBI-mandated domain for non-bank financial entities
+  - sbi       # brand TLD owned by State Bank of India
+
+# Suffixes missing from tldextract's bundled public suffix snapshot.
+extra_public_suffixes:
+  - bank.in
+  - fin.in
+
+url_shorteners:
+  - bit.ly
+  - bitly.com
+  - bit.do
+  - tinyurl.com
+  - t.co
+  - goo.gl
+  - ow.ly
+  - is.gd
+  - v.gd
+  - buff.ly
+  - cutt.ly
+  - rb.gy
+  - shorturl.at
+  - tiny.cc
+  - rebrand.ly
+  - t.ly
+  - s.id
+  - bl.ink
+  - short.io
+  - shorte.st
+  - surl.li
+  - urlz.fr
+  - qrco.de
+  - amzn.to
+  - fkrt.it
+
+# Domain endings heavily abused for phishing because they are cheap or free.
+suspicious_tlds:
+  - xyz
+  - top
+  - click
+  - link
+  - work
+  - loan
+  - live
+  - buzz
+  - icu
+  - cyou
+  - rest
+  - fit
+  - gq
+  - ml
+  - cf
+  - tk
+  - ga
+  - cam
+  - sbs
+  - monster
+  - quest
+  - online
+  - site
+  - win
+  - bid
+  - date
+  - racing
+  - review
+  - stream
+  - download
+  - zip
+  - mov
+  - kim
+  - men
+  - party
+  - trade
+  - cricket
+  - science
+  - accountant
+  - cfd
+  - lol
+  - pw
+  - vip
+
+# Shared hosting platforms whose names contain brand keywords. Links on them
+# are not official, but the brand name alone is not evidence of impersonation.
+brand_check_exempt:
+  - amazonaws.com
+  - googleapis.com
+  - googleusercontent.com
+
+# Legitimate Indian banks, payment apps, government services and large brands.
+# `domains` are official registered domains. `keywords` are brand names to
+# look for inside unofficial domains; keywords shorter than 5 characters only
+# match as a whole token (e.g. "sbi-kyc.com" but not "sbirds.com").
+brands:
+  - name: State Bank of India
+    domains: [sbi.co.in, onlinesbi.sbi, onlinesbi.com, sbicard.com, sbilife.co.in, sbimf.com]
+    keywords: [sbi, onlinesbi, yono]
+  - name: HDFC Bank
+    domains: [hdfcbank.com, hdfc.com, hdfclife.com, hdfcergo.com]
+    keywords: [hdfc, hdfcbank]
+  - name: ICICI Bank
+    domains: [icicibank.com, icicidirect.com, icicilombard.com, iciciprulife.com]
+    keywords: [icici, icicibank]
+  - name: Axis Bank
+    domains: [axisbank.com, axisbank.co.in]
+    keywords: [axisbank]
+  - name: Kotak Mahindra Bank
+    domains: [kotak.com, kotaksecurities.com]
+    keywords: [kotak, kotakbank]
+  - name: Punjab National Bank
+    domains: [pnbindia.in, netpnb.com]
+    keywords: [pnb, pnbindia]
+  - name: Bank of Baroda
+    domains: [bankofbaroda.in, bankofbaroda.com, bobfinancial.com]
+    keywords: [bankofbaroda, baroda]
+  - name: Canara Bank
+    domains: [canarabank.com, canarabank.in]
+    keywords: [canarabank, canara]
+  - name: Union Bank of India
+    domains: [unionbankofindia.co.in]
+    keywords: [unionbank, unionbankofindia]
+  - name: IDFC FIRST Bank
+    domains: [idfcfirstbank.com]
+    keywords: [idfc, idfcfirst]
+  - name: Yes Bank
+    domains: [yesbank.in]
+    keywords: [yesbank]
+  - name: IndusInd Bank
+    domains: [indusind.com]
+    keywords: [indusind]
+  - name: Paytm
+    domains: [paytm.com, paytmbank.com, paytm.in, paytmmall.com]
+    keywords: [paytm]
+  - name: PhonePe
+    domains: [phonepe.com]
+    keywords: [phonepe]
+  - name: Google Pay
+    domains: [google.com, google.co.in]
+    keywords: [gpay, googlepay]
+  - name: NPCI / BHIM UPI
+    domains: [npci.org.in, bhimupi.org.in]
+    keywords: [npci, bhim, bhimupi]
+  - name: MobiKwik
+    domains: [mobikwik.com]
+    keywords: [mobikwik]
+  - name: CRED
+    domains: [cred.club]
+    keywords: [cred]
+  - name: Bajaj Finserv
+    domains: [bajajfinserv.in]
+    keywords: [bajajfinserv]
+  - name: Reserve Bank of India
+    domains: [rbi.org.in]
+    keywords: [rbi]
+  - name: Income Tax Department
+    domains: [incometax.gov.in, incometaxindia.gov.in]
+    keywords: [incometax, incometaxindia]
+  - name: UIDAI (Aadhaar)
+    domains: [uidai.gov.in]
+    keywords: [uidai, aadhaar, aadhar]
+  - name: India Post
+    domains: [indiapost.gov.in]
+    keywords: [indiapost]
+  - name: Parivahan (e-Challan)
+    domains: [parivahan.gov.in]
+    keywords: [parivahan, echallan]
+  - name: EPFO
+    domains: [epfindia.gov.in]
+    keywords: [epfo, epfindia]
+  - name: National Cyber Crime Portal
+    domains: [cybercrime.gov.in]
+    keywords: [cybercrime]
+  - name: IRCTC
+    domains: [irctc.co.in]
+    keywords: [irctc]
+  - name: LIC
+    domains: [licindia.in]
+    keywords: [licindia]
+  - name: Jio
+    domains: [jio.com]
+    keywords: [jio, myjio]
+  - name: Airtel
+    domains: [airtel.in, airtel.com]
+    keywords: [airtel]
+  - name: BSNL
+    domains: [bsnl.co.in]
+    keywords: [bsnl]
+  - name: Amazon
+    domains: [amazon.in, amazon.com, amzn.in, amzn.to]
+    keywords: [amazon]
+  - name: Flipkart
+    domains: [flipkart.com, fkrt.it]
+    keywords: [flipkart]
+  - name: Tata Power
+    domains: [tatapower.com, tatapower-ddl.com]
+    keywords: [tatapower]
+  - name: Adani Electricity
+    domains: [adanielectricity.com]
+    keywords: [adanielectricity]
+  - name: MSEDCL (Mahavitaran)
+    domains: [mahadiscom.in]
+    keywords: [mahadiscom, mahavitaran]
+  - name: BSES Delhi
+    domains: [bsesdelhi.com]
+    keywords: [bses, bsesdelhi]
+  - name: BESCOM
+    domains: [bescom.co.in]
+    keywords: [bescom]

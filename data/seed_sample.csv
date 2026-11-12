@@ -1,0 +1,101 @@
+id,text,language,label,source,scam_type
+sample-001,"Dear Customer, your SBI YONO account will be blocked today. Please update your PAN/KYC immediately: http://sbi-kyc-update.xyz/login",en,scam,synthetic_sample,kyc_scam
+sample-002,HDFC Bank: Your KYC has expired. Update within 24 hrs to avoid suspension of your account. Click https://bit.ly/hdfc-kyc24,en,scam,synthetic_sample,kyc_scam
+sample-003,This is from Paytm KYC department. Please share the OTP you received to complete your wallet verification.,en,scam,synthetic_sample,credential_theft
+sample-004,"Congratulations! You have received a cashback of Rs 2,000 from PhonePe. Enter your UPI PIN to receive the amount in your account.",en,scam,synthetic_sample,upi_fraud
+sample-005,"Dear Consumer, your electricity power will be disconnected tonight at 9.30 PM because your previous month bill was not updated. Please contact our electricity officer immediately 9876543210",en,scam,synthetic_sample,utility_scam
+sample-006,Congratulations! You are selected for Amazon work from home job. Earn Rs 3000-8000 daily. Pay registration fee of Rs 1499 to start. WhatsApp 9123456780,en,scam,synthetic_sample,job_scam
+sample-007,"Hi, I am Priya from Digital Marketing Team. Like YouTube videos and earn Rs 150 per task. Daily income 5000. Interested? Reply YES",en,scam,synthetic_sample,job_scam
+sample-008,"KBC Jio Lucky Draw: Your number has won Rs 25,00,000. To claim prize contact Manager Rana Pratap Singh on WhatsApp 7012345678",en,scam,synthetic_sample,lottery_scam
+sample-009,You have won an iPhone 15 in the Flipkart anniversary lucky draw. Pay Rs 499 delivery charges to receive your prize: http://flipkart-lucky.top/claim,en,scam,synthetic_sample,lottery_scam
+sample-010,Your refund for order #4589 has failed. Contact Amazon customer care 8765432109 to get your refund processed.,en,scam,synthetic_sample,customer_care_scam
+sample-011,"SBI Credit Card: To stop the annual charge of Rs 4,999 please download AnyDesk and call our executive at 9988776655.",en,scam,synthetic_sample,remote_access_scam
+sample-012,India Post: Your parcel is on hold at our warehouse due to incomplete address. Update your address within 12 hours: https://indiapost-track.top/in,en,scam,synthetic_sample,parcel_scam
+sample-013,This is Mumbai Cyber Crime. A FedEx parcel booked on your Aadhaar contains MDMA drugs. An arrest warrant has been issued. Join the video call immediately.,en,scam,synthetic_sample,impersonation_scam
+sample-014,"Income Tax Department: You are eligible for an income tax refund of Rs 15,490. Please verify your account number at http://incometax-refund.online",en,scam,synthetic_sample,tax_refund_scam
+sample-015,"Dear SBI Card holder, your reward points worth Rs 7,250 will expire today. Redeem now: http://sbicard-rewards.club/redeem",en,scam,synthetic_sample,reward_scam
+sample-016,TRAI notice: your mobile number will be disconnected in 2 hours due to illegal activity. Press 9 to speak to our officer.,en,scam,synthetic_sample,telecom_scam
+sample-017,Join our VIP stock market WhatsApp group. Guaranteed returns of 30% monthly. Limited seats. https://t.me/vipprofit_club,en,scam,synthetic_sample,investment_scam
+sample-018,Instant personal loan of Rs 5 lakh approved without documents or CIBIL check. Pay processing fee Rs 999 to get amount credited today.,en,scam,synthetic_sample,loan_scam
+sample-019,Your vehicle has a pending e-challan of Rs 500. Pay now to avoid licence suspension: http://echallan-parivahan.xyz/pay,en,scam,synthetic_sample,challan_scam
+sample-020,"SBI Rewards: Your 9,870 points are expiring. Install the SBI Rewards.apk from https://sbi-rewardz.top to redeem.",en,scam,synthetic_sample,malware
+sample-021,"Hi, I am buying your sofa from OLX. I have sent a QR code, scan it to receive the advance payment of Rs 15,000.",en,scam,synthetic_sample,upi_fraud
+sample-022,"Sorry sir, I sent Rs 5000 to your number by mistake. Please return it, I have sent a request on Google Pay.",en,scam,synthetic_sample,upi_fraud
+sample-023,PM Free Recharge Yojana: All Indian users get free recharge of Rs 239 for 3 months. Register now: http://free-recharge-yojana.site,en,scam,synthetic_sample,freebie_scam
+sample-024,Your Aadhaar is not linked with your bank account. Your account will be blocked today. Call 9012345678 to update.,en,scam,synthetic_sample,kyc_scam
+sample-025,"Dear user, your net banking has been locked. Reply with your customer ID, password and the OTP to unlock it.",en,scam,synthetic_sample,credential_theft
+sample-026,Aapka SBI account aaj band ho jayega. Turant KYC update karo is link par: http://sbi-yono-kyc.click,hinglish,scam,synthetic_sample,kyc_scam
+sample-027,"Priya grahak, aapka bijli connection aaj raat 9:30 baje kaat diya jayega. Bijli officer se turant sampark kare 9876501234",hinglish,scam,synthetic_sample,utility_scam
+sample-028,"Sir paise receive karne ke liye UPI PIN daalein, aapka cashback Rs 1500 pending hai",hinglish,scam,synthetic_sample,upi_fraud
+sample-029,"Sir aapke mobile pe ek OTP aaya hoga, wo OTP bata do, aapka card renewal ho jayega",hinglish,scam,synthetic_sample,credential_theft
+sample-030,"Ghar baithe kamaye 5000 roz! Part time job, sirf Rs 999 registration fees bharo. Abhi WhatsApp karo 8899001122",hinglish,scam,synthetic_sample,job_scam
+sample-031,"Badhai ho! Aapne KBC lottery mein 25 lakh jeete hai. Inaam paane ke liye 12,500 tax jama kare.",hinglish,scam,synthetic_sample,lottery_scam
+sample-032,"Bhai galti se aapke account mein 3000 transfer ho gaye, please wapas bhej do, bahut urgent hai",hinglish,scam,synthetic_sample,upi_fraud
+sample-033,"Main Delhi police se bol raha hu. Aapke naam pe FIR registered hai, abhi video call pe aao warna giraftar ho jaoge",hinglish,scam,synthetic_sample,impersonation_scam
+sample-034,Crypto trading se paisa double karo sirf 7 din mein. 100% profit guaranteed. Join karo: t.me/doublepaisa,hinglish,scam,synthetic_sample,investment_scam
+sample-035,"Aapka courier parcel customs mein hold pe hai. 2 din mein release ke liye Rs 2,450 pay kare: http://bluedart-release.xyz",hinglish,scam,synthetic_sample,parcel_scam
+sample-036,Aapki SIM 24 ghante mein band ho jayegi. eSIM activate karne ke liye yeh link kholiye: bit.ly/esim-jio,hinglish,scam,synthetic_sample,telecom_scam
+sample-037,Refund ke liye Play Store se AnyDesk download karein aur 9 digit code hamein bataye,hinglish,scam,synthetic_sample,remote_access_scam
+sample-038,"Electricity bill refund ke liye customer care 9765432180 par call karein, aapka paisa turant wapas aa jayega",hinglish,scam,synthetic_sample,customer_care_scam
+sample-039,"प्रिय ग्राहक, आपका केवाईसी अपडेट लंबित है। 24 घंटे में अपडेट न करने पर आपका खाता बंद हो जाएगा। लिंक पर क्लिक करें: http://sbi-kyc.top",hi,scam,synthetic_sample,kyc_scam
+sample-040,"प्रिय उपभोक्ता, आपकी बिजली आज रात 9:30 बजे काट दी जाएगी क्योंकि आपका पिछले महीने का बिल अपडेट नहीं हुआ। तुरंत बिजली अधिकारी से संपर्क करें 9812345670",hi,scam,synthetic_sample,utility_scam
+sample-041,"बधाई हो! आपने कौन बनेगा करोड़पति लॉटरी में 25 लाख रुपये जीते हैं। इनाम पाने के लिए 9,800 रुपये शुल्क जमा करें।",hi,scam,synthetic_sample,lottery_scam
+sample-042,आपके खाते में 5000 रुपये का रिफंड आया है। रिफंड प्राप्त करने के लिए अपना यूपीआई पिन डालें।,hi,scam,synthetic_sample,upi_fraud
+sample-043,"आपके मोबाइल पर आया ओटीपी तुरंत बताएं, वरना आपका एटीएम कार्ड बंद हो जाएगा।",hi,scam,synthetic_sample,credential_theft
+sample-044,घर बैठे रोज 3000 रुपये कमाएं। नौकरी के लिए केवल 1500 रुपये का पंजीकरण शुल्क जमा करें।,hi,scam,synthetic_sample,job_scam
+sample-045,"मैं सीबीआई अधिकारी बोल रहा हूं। आपके आधार कार्ड से अवैध पार्सल भेजा गया है, आपके नाम पर गिरफ्तारी वारंट जारी हुआ है।",hi,scam,synthetic_sample,impersonation_scam
+sample-046,"आयकर विभाग: आपका 12,300 रुपये का इनकम टैक्स रिफंड स्वीकृत हो गया है। प्राप्त करने के लिए लिंक पर क्लिक करें http://itr-refund.xyz",hi,scam,synthetic_sample,tax_refund_scam
+sample-047,प्रधानमंत्री मुफ्त लैपटॉप योजना 2026: पंजीकरण के लिए इस लिंक पर क्लिक करें http://pm-laptop-yojana.online,hi,scam,synthetic_sample,freebie_scam
+sample-048,आपका पार्सल अधूरा पता होने के कारण रोका गया है। पता अपडेट करने के लिए क्लिक करें: http://indiapost-update.top,hi,scam,synthetic_sample,parcel_scam
+sample-049,482913 is your OTP for login to SBI YONO. Do not share it with anyone. SBI never asks for OTP.,en,legit,synthetic_sample,
+sample-050,"Your OTP for transaction of INR 1,250.00 at AMAZON on HDFC Bank card ending 4321 is 739201. Valid for 5 mins. Never share your OTP with anyone.",en,legit,synthetic_sample,
+sample-051,Rs.500.00 debited from A/c XX1234 on 12-11-26 to VPA rahul.k@okicici. Not you? Call 1800 1234 to block. -SBI,en,legit,synthetic_sample,
+sample-052,"INR 25,000.00 credited to your A/c XX5678 on 11-Nov-26 by NEFT from ACME TECH PVT LTD. Avl Bal INR 41,203.50 -ICICI Bank",en,legit,synthetic_sample,
+sample-053,Your Amazon order #402-1234567 has been shipped and will be delivered by Thursday. Track: https://amzn.in/d/abc123,en,legit,synthetic_sample,
+sample-054,Your Swiggy order is out for delivery. Your delivery partner Ravi will reach in 10 minutes.,en,legit,synthetic_sample,
+sample-055,Your debit card ending 4321 has been blocked as per your request. For a new card visit any branch. -Axis Bank,en,legit,synthetic_sample,
+sample-056,Scheduled maintenance: power supply will be cut from 10 AM to 2 PM on 14-Nov in Sector 21 for line repair. -BSES Rajdhani,en,legit,synthetic_sample,
+sample-057,"Your electricity bill of Rs 1,240 for October is generated. Due date 25-11-2026. Pay via the official app or website. -Tata Power",en,legit,synthetic_sample,
+sample-058,Re-KYC is due for your account. Please visit your nearest branch with valid documents or use internet banking. -Bank of Baroda,en,legit,synthetic_sample,
+sample-059,Your Jio recharge of Rs 299 is successful. Validity 28 days. Enjoy unlimited calls.,en,legit,synthetic_sample,
+sample-060,"Hi, are we still meeting for lunch tomorrow at 1? Let me know.",en,legit,synthetic_sample,
+sample-061,"Your IRCTC booking PNR 4521367890 is confirmed. Train 12951 dep 16:35 on 20-Nov. Coach B2, berth 34.",en,legit,synthetic_sample,
+sample-062,UPI payment of Rs 150.00 to Chai Point successful. UPI Ref 431298765432. -PhonePe,en,legit,synthetic_sample,
+sample-063,"Your income tax return for AY 2026-27 has been processed. Refund of Rs 3,420 has been credited to your bank account. -Income Tax Department",en,legit,synthetic_sample,
+sample-064,Your parcel with AWB 1234567890 has been delivered. Thank you for choosing Blue Dart.,en,legit,synthetic_sample,
+sample-065,"Reminder: your HDFC Bank credit card payment of Rs 8,420 is due on 18-Nov. Ignore if already paid.",en,legit,synthetic_sample,
+sample-066,Interview scheduled for Software Engineer role on 15 Nov at 11 AM at our Pune campus. Please carry your resume. No fees are charged at any stage of hiring.,en,legit,synthetic_sample,
+sample-067,Your e-challan of Rs 500 has been issued for overspeeding. Pay only at https://echallan.parivahan.gov.in,en,legit,synthetic_sample,
+sample-068,"Mom, I reached the hostel safely. Will call you at night.",en,legit,synthetic_sample,
+sample-069,"Your LIC premium of Rs 12,500 for policy no. 512345678 has been received. Thank you.",en,legit,synthetic_sample,
+sample-070,Aapka OTP 552310 hai. Ise kisi ke saath share na karein. -Paytm,hinglish,legit,synthetic_sample,
+sample-071,Bhai kal cricket khelne chalega? 6 baje ground pe milte hai,hinglish,legit,synthetic_sample,
+sample-072,"Rs 2,000 aapke account XX9087 mein credit ho gaye hain. UPI Ref 431200998877.",hinglish,legit,synthetic_sample,
+sample-073,"Kal subah 9 baje doctor ka appointment hai, yaad rakhna",hinglish,legit,synthetic_sample,
+sample-074,Aapka order pack ho gaya hai aur kal tak deliver ho jayega. -Meesho,hinglish,legit,synthetic_sample,
+sample-075,"Beta, aaj shaam ko sabzi le aana, aur doodh bhi",hinglish,legit,synthetic_sample,
+sample-076,Aapka gas cylinder booking number 2345 confirm ho gaya hai. Delivery 2 din mein hogi. -Indane,hinglish,legit,synthetic_sample,
+sample-077,"Meeting 4 baje shift ho gayi hai, sab log time pe join karna",hinglish,legit,synthetic_sample,
+sample-078,Aapke bijli bill ka bhugtan Rs 980 safal raha. Dhanyavaad. -MSEDCL,hinglish,legit,synthetic_sample,
+sample-079,"प्रिय ग्राहक, आपका ओटीपी 123456 है। इसे किसी के साथ साझा न करें। -एसबीआई",hi,legit,synthetic_sample,
+sample-080,"कल सुबह 10 बजे ऑफिस में मीटिंग है, समय पर आ जाना।",hi,legit,synthetic_sample,
+sample-081,"आपके खाते XX4567 से 1,200 रुपये डेबिट किए गए हैं। यदि यह लेनदेन आपने नहीं किया है तो 1800-11-2211 पर कॉल करें।",hi,legit,synthetic_sample,
+sample-082,आपका पार्सल आज डिलीवर कर दिया गया है। धन्यवाद। -इंडिया पोस्ट,hi,legit,synthetic_sample,
+sample-083,"आपके बिजली बिल 1,450 रुपये की अंतिम तिथि 20 नवंबर है। आधिकारिक ऐप से भुगतान करें।",hi,legit,synthetic_sample,
+sample-084,"बेटा, रात को खाना खाकर ही सोना। पापा।",hi,legit,synthetic_sample,
+sample-085,आपकी ट्रेन टिकट पीएनआर 4512367890 कन्फर्म है। यात्रा शुभ हो। -आईआरसीटीसी,hi,legit,synthetic_sample,
+sample-086,आपका 239 रुपये का रिचार्ज सफल रहा। वैधता 28 दिन।,hi,legit,synthetic_sample,
+sample-087,Flat 50% off on all shoes this weekend only! Shop now at www.myntra.com. T&C apply.,en,spam_not_scam,synthetic_sample,
+sample-088,Get 2 pizzas at Rs 399 only! Order now on the Domino's app. Offer valid till Sunday.,en,spam_not_scam,synthetic_sample,
+sample-089,Upgrade to Airtel Xstream Fiber and get 3 months of OTT apps at no extra cost. Call 121 or visit airtel.in,en,spam_not_scam,synthetic_sample,
+sample-090,Big Billion Days are here! Up to 80% off on electronics. Shop on Flipkart today.,en,spam_not_scam,synthetic_sample,
+sample-091,Pre-approved credit card offer from HDFC Bank. Apply on the official HDFC Bank website or app. T&C apply.,en,spam_not_scam,synthetic_sample,
+sample-092,Join our yoga classes this Sunday at Central Park. First session is complimentary! Call 8800112233,en,spam_not_scam,synthetic_sample,
+sample-093,Your favourite brand is on sale! Get extra 10% off with code SAVE10 on AJIO.,en,spam_not_scam,synthetic_sample,
+sample-094,"Last chance to book your Goa holiday package at Rs 9,999. Limited seats. Visit makemytrip.com",en,spam_not_scam,synthetic_sample,
+sample-095,"Diwali sale! Saare kapdon par 40% off. Aaj hi visit karein Sharma Garments, Main Market.",hinglish,spam_not_scam,synthetic_sample,
+sample-096,"Naye saal par Jio ka dhamaka offer, Rs 2025 mein poore saal unlimited. MyJio app se recharge karein.",hinglish,spam_not_scam,synthetic_sample,
+sample-097,Sirf aaj! Ek pizza khareedo aur doosra aadhe daam mein pao. Order karein Zomato app par.,hinglish,spam_not_scam,synthetic_sample,
+sample-098,दिवाली धमाका सेल! सभी मोबाइल पर 30% तक की छूट। आज ही नजदीकी स्टोर पर आएं।,hi,spam_not_scam,synthetic_sample,
+sample-099,"नया कोचिंग बैच 1 दिसंबर से शुरू। सीमित सीटें, आज ही प्रवेश लें। संपर्क करें 9898989898",hi,spam_not_scam,synthetic_sample,
+sample-100,शादी के लिए बेहतरीन कैटरिंग सेवा। बुकिंग पर 10% छूट।,hi,spam_not_scam,synthetic_sample,

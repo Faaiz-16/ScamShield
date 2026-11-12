@@ -1,0 +1,29 @@
+# Secrets and local state
+.env
+.env.*
+*.db
+*.sqlite3
+
+# Environments, editors and caches
+.venv/
+venv/
+.git/
+.idea/
+.vscode/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+
+# Large or local-only data and models (the image trains its own baseline)
+ml/models/
+ml/results/
+ml/colab/
+data/raw/
+data/processed/
+
+# Not needed at runtime
+docs/
+tests/
+deploy/

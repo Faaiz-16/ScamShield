@@ -149,6 +149,9 @@ ScamShield/
   data/             labeling guide and synthetic seed sample
   migrations/       Alembic migrations
   tests/            pytest suite
+  deploy/           server setup script
+  docs/             README images and screenshots
+  Dockerfile, docker-compose.yml
 ```
 
 ## Getting started
@@ -208,6 +211,33 @@ python -m bot.main
 ```
 
 Commands: `/start`, `/help`, `/language`. Forward or paste any message to check it.
+
+## Deployment
+
+`docker-compose.yml` runs MySQL, the API and the bot on one server, each restarting
+automatically after a crash or reboot. The bot polls Telegram, so the server needs no open
+ports or domain name; the API listens on `127.0.0.1:8000` only. It fits a 1 GB server (for
+example a free Google Cloud e2-micro) with the swap that the setup script adds.
+
+On a fresh Ubuntu 24.04 server, from the project folder:
+
+```bash
+sudo bash deploy/setup-ubuntu.sh        # swap + Docker; log out and back in afterwards
+cp .env.example .env                    # then set HASH_SALT, BOT_API_KEY, TELEGRAM_BOT_TOKEN
+echo "MYSQL_PASSWORD=$(openssl rand -hex 16)" >> .env
+echo "MYSQL_ROOT_PASSWORD=$(openssl rand -hex 16)" >> .env
+docker compose up -d --build
+docker compose ps                       # all three should be running, api "healthy"
+```
+
+The image trains the baseline classifier from the seed data while it builds, and the API runs
+`alembic upgrade head` on every start. `DATABASE_URL` and `API_BASE_URL` in `.env` are
+overridden inside Compose. Stop any other copy of the bot first: Telegram allows only one
+program to poll a bot token at a time.
+
+Useful commands: `docker compose logs -f bot`, `docker compose restart`, and after copying
+new code, `docker compose up -d --build`. To open the web app from your own computer, use an
+SSH tunnel to port 8000.
 
 ## Training the models
 

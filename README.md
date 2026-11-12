@@ -149,7 +149,7 @@ ScamShield/
   data/             labeling guide and synthetic seed sample
   migrations/       Alembic migrations
   tests/            pytest suite
-  deploy/           server setup script
+  deploy/           server setup and update scripts
   docs/             README images and screenshots
   Dockerfile, docker-compose.yml
 ```
@@ -219,9 +219,10 @@ automatically after a crash or reboot. The bot polls Telegram, so the server nee
 ports or domain name; the API listens on `127.0.0.1:8000` only. It fits a 1 GB server (for
 example a free Google Cloud e2-micro) with the swap that the setup script adds.
 
-On a fresh Ubuntu 24.04 server, from the project folder:
+On a fresh Ubuntu 24.04 server:
 
 ```bash
+git clone https://github.com/Faaiz-16/ScamShield.git && cd ScamShield
 sudo bash deploy/setup-ubuntu.sh        # swap + Docker; log out and back in afterwards
 cp .env.example .env                    # then set HASH_SALT, BOT_API_KEY, TELEGRAM_BOT_TOKEN
 echo "MYSQL_PASSWORD=$(openssl rand -hex 16)" >> .env
@@ -235,9 +236,10 @@ The image trains the baseline classifier from the seed data while it builds, and
 overridden inside Compose. Stop any other copy of the bot first: Telegram allows only one
 program to poll a bot token at a time.
 
-Useful commands: `docker compose logs -f bot`, `docker compose restart`, and after copying
-new code, `docker compose up -d --build`. To open the web app from your own computer, use an
-SSH tunnel to port 8000.
+To update the server to the latest code on GitHub, run `bash deploy/update.sh` from the project
+folder: it pulls, rebuilds and restarts only when something changed, and keeps `.env` and the
+database. Other useful commands: `docker compose logs -f bot` and `docker compose restart`. To
+open the web app from your own computer, use an SSH tunnel to port 8000.
 
 ## Training the models
 

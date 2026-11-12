@@ -3,6 +3,8 @@ name = "scamshield"
 version = "0.1.0"
 description = "Multilingual scam message detector for SMS, WhatsApp and UPI messages in India"
 requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Faaiz Ali" }]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

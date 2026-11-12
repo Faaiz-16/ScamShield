@@ -510,3 +510,11 @@ both training pipelines (MuRIL with a tiny local model, skipped if PyTorch is no
 
 If you have lost money to a scam in India, call the national cyber crime helpline **1930**
 immediately or report at [cybercrime.gov.in](https://cybercrime.gov.in).
+
+## Author
+
+**Faaiz Ali** ([GitHub: Faaiz-16](https://github.com/Faaiz-16))
+
+## License
+
+Released under the [MIT License](LICENSE).

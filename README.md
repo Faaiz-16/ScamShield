@@ -146,10 +146,10 @@ ScamShield/
     colab/          Google Colab notebook for MuRIL training
     models/         trained models (git-ignored)
     results/        evaluation reports
-  data/             labeling guide and synthetic seed sample
+  data/             labeling guide, synthetic seed sample, reviewed labels
   migrations/       Alembic migrations
   tests/            pytest suite
-  deploy/           server setup and update scripts
+  deploy/           server setup, update and feedback export scripts
   docs/             README images and screenshots
   Dockerfile, docker-compose.yml
 ```
@@ -298,20 +298,24 @@ sweep for the Likely Scam threshold.
 
 ### 5. Feedback loop
 
-User ratings from the web app and bot are stored with each analysis. Export them as labelled
-rows, review them, and retrain:
+User ratings from the web app and bot are stored with each analysis. Nothing retrains
+automatically: ratings could be wrong or deliberately misleading, so a person reviews them
+first. The cycle:
 
 ```bash
-python -m ml.export_feedback
-python -m ml.prepare_data --input data/seed_sample.csv data/raw/feedback_YYYYMMDD.csv
-python -m ml.train_baseline
-python -m ml.evaluate
+bash deploy/export-feedback.sh      # on the server: new ratings -> ~/feedback-YYYY-MM-DD.csv
+# download it, set keep=no on rows that look wrong, save it in data/labels/
+bash ml/retrain.sh                  # on your computer: retrain and evaluate
+git diff ml/results/                # compare with the previous results
+# if better: commit data/labels/ and ml/results/, git push
+bash deploy/update.sh               # on the server: rebuilds and trains on the new labels
 ```
 
 Ratings become labels as follows: "wrong" with a chosen label gives that label, "correct" on
 a Likely Scam verdict gives `scam`, and "correct" on a Safe verdict gives `legit` only with
 `--confirmed-safe-as-legit` (the message could also be spam). The majority vote wins and ties
-are skipped.
+are skipped. Messages already in `data/labels/` are not exported again. See
+[data/labels/README.md](data/labels/README.md).
 
 ## API
 

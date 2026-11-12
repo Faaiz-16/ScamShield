@@ -13,7 +13,8 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-# Trained models are not in the repository, so train the baseline from the seed data here.
+# Trained models are not in the repository, so train the baseline here, from the seed
+# sample plus every reviewed label file in data/labels/.
 # It takes a few seconds and matches the scikit-learn version installed above.
 RUN python -m ml.prepare_data --output-dir /tmp/processed \
     && python -m ml.train_baseline \

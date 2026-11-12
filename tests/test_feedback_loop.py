@@ -7,6 +7,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 from sqlalchemy.orm import Session
 
@@ -14,7 +15,7 @@ from app.core.database import Base, build_engine, build_session_factory, utcnow
 from app.detection.verdict import VerdictConfig
 from app.models import Analysis, Feedback
 from ml import evaluate_verdict, export_feedback, prepare_data, train_baseline
-from ml.dataset import load_dataset
+from ml.dataset import DatasetError, load_dataset
 from ml.evaluate_verdict import binary_metrics, score_verdicts
 
 # --- Feedback export ---------------------------------------------------------
@@ -129,7 +130,9 @@ def test_export_writes_a_valid_dataset(database, tmp_path: Path, capsys) -> None
     add_analysis(session, "safe", [(False, "scam")], text="Enter UPI PIN to receive <AMOUNT>")
     output = tmp_path / "out" / "feedback.csv"
 
-    assert export_feedback.main(["--database-url", url, "--output", str(output)]) == 0
+    labels_dir = tmp_path / "labels"
+    args = ["--database-url", url, "--output", str(output), "--labels-dir", str(labels_dir)]
+    assert export_feedback.main(args) == 0
     df = load_dataset(output)
     assert len(df) == 2
     assert set(df["label"]) == {"scam"}
@@ -140,9 +143,82 @@ def test_export_with_nothing_to_write(database, tmp_path: Path, capsys) -> None:
     url, session = database
     add_analysis(session, "suspicious", [(True, None)])
     output = tmp_path / "feedback.csv"
-    assert export_feedback.main(["--database-url", url, "--output", str(output)]) == 0
+    args = ["--database-url", url, "--output", str(output), "--labels-dir", str(tmp_path)]
+    assert export_feedback.main(args) == 0
     assert not output.exists()
     assert "nothing written" in capsys.readouterr().out
+
+
+def test_export_skips_reviewed_rows_and_marks_keep(database, tmp_path: Path) -> None:
+    url, session = database
+    first = add_analysis(session, "likely_scam", [(True, None)], scam_type="upi_fraud")
+    labels_dir = tmp_path / "labels"
+    output = tmp_path / "first.csv"
+    base = ["--database-url", url, "--labels-dir", str(labels_dir)]
+    assert export_feedback.main([*base, "--output", str(output)]) == 0
+    assert set(pd.read_csv(output, dtype=str)["keep"]) == {"yes"}
+
+    # The reviewer rejects the row and saves the file in the labels folder.
+    labels_dir.mkdir()
+    reviewed = pd.read_csv(output, dtype=str, keep_default_na=False)
+    reviewed["keep"] = "no"
+    reviewed.to_csv(labels_dir / "feedback-1.csv", index=False)
+
+    second = add_analysis(session, "safe", [(False, "scam")], text="Enter UPI PIN to get <AMOUNT>")
+    later = tmp_path / "second.csv"
+    assert export_feedback.main([*base, "--output", str(later)]) == 0
+    ids = set(pd.read_csv(later, dtype=str)["id"])
+    assert ids == {f"fb-{second}"}  # rejected rows are not offered again
+    assert f"fb-{first}" not in ids
+
+
+# --- Reviewed label files ----------------------------------------------------
+
+
+def write_reviewed(path: Path, keep: list[str]) -> None:
+    rows = [
+        {
+            "id": f"r-{i}",
+            "text": f"Message number {i} about your parcel",
+            "language": "en",
+            "label": "legit",
+            "source": "user_feedback",
+            "scam_type": "",
+            "keep": value,
+        }
+        for i, value in enumerate(keep)
+    ]
+    pd.DataFrame(rows).to_csv(path, index=False)
+
+
+def test_keep_column_drops_rejected_rows(tmp_path: Path) -> None:
+    path = tmp_path / "reviewed.csv"
+    write_reviewed(path, ["yes", "No", "", "n"])
+    assert load_dataset(path)["id"].tolist() == ["r-0", "r-2"]
+
+
+def test_keep_column_rejects_unknown_values(tmp_path: Path) -> None:
+    path = tmp_path / "reviewed.csv"
+    write_reviewed(path, ["yes", "maybe"])
+    with pytest.raises(DatasetError, match="keep column"):
+        load_dataset(path)
+
+
+def test_reviewed_files_are_found_and_used_by_default(tmp_path: Path, monkeypatch) -> None:
+    from ml import dataset
+
+    labels_dir = tmp_path / "labels"
+    labels_dir.mkdir()
+    write_reviewed(labels_dir / "b.csv", ["yes", "no"])
+    (labels_dir / "notes.md").write_text("not a label file")
+    monkeypatch.setattr(dataset, "LABELS_DIR", labels_dir)
+
+    assert dataset.reviewed_label_files() == [labels_dir / "b.csv"]
+    assert dataset.reviewed_ids() == {"r-0", "r-1"}
+    assert dataset.reviewed_label_files(tmp_path / "missing") == []
+
+    args = prepare_data.parse_args([])
+    assert args.input == [dataset.SEED_DATA_PATH, labels_dir / "b.csv"]
 
 
 # --- Verdict evaluation ------------------------------------------------------

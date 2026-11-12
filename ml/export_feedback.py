@@ -2,7 +2,7 @@
 
 Usage:
     python -m ml.export_feedback
-    python -m ml.prepare_data --input data/seed_sample.csv data/raw/feedback_20261112.csv
+    bash deploy/export-feedback.sh          # on the server (runs this inside Docker)
 
 Each rated analysis gets a label from its feedback votes:
 
@@ -13,8 +13,12 @@ Each rated analysis gets a label from its feedback votes:
 * "correct" on Suspicious, or "wrong" without a label -> no label (skipped)
 
 When several users rated the same analysis, the majority label wins; a tie is
-skipped. Only anonymised text is exported. The output goes to data/raw/
-(git-ignored) so a person can review it before it is used for training.
+skipped. Only anonymised text is exported.
+
+Messages already saved in a reviewed file in data/labels/ are skipped, so each
+export contains only new ratings. The file has an extra "keep" column set to
+"yes": a reviewer changes it to "no" for rows that look wrong, then saves the
+file in data/labels/, where ml.prepare_data picks it up for training.
 """
 
 from __future__ import annotations
@@ -34,7 +38,14 @@ import app.models  # noqa: F401  (registers tables)
 from app.core.config import BASE_DIR, get_settings
 from app.core.database import build_engine, build_session_factory, utcnow
 from app.models import Analysis, Feedback
-from ml.dataset import COLUMNS, DatasetError, allowed_scam_types, validate_dataset
+from ml.dataset import (
+    COLUMNS,
+    KEEP_COLUMN,
+    DatasetError,
+    allowed_scam_types,
+    reviewed_ids,
+    validate_dataset,
+)
 
 RAW_DIR = BASE_DIR / "data" / "raw"
 SOURCE = "user_feedback"
@@ -62,6 +73,7 @@ def collect_rows(
     since: datetime,
     min_votes: int = 1,
     confirmed_safe_as_legit: bool = False,
+    skip_ids: frozenset[str] | set[str] = frozenset(),
 ) -> tuple[list[dict[str, str]], ExportSummary]:
     summary = ExportSummary()
     known_types = allowed_scam_types()
@@ -75,6 +87,10 @@ def collect_rows(
 
     rows: list[dict[str, str]] = []
     for analysis in analyses:
+        row_id = f"fb-{analysis.public_id}"
+        if row_id in skip_ids:
+            summary.skipped["already in a reviewed file"] += 1
+            continue
         votes = Counter(
             label
             for fb in analysis.feedback
@@ -97,7 +113,7 @@ def collect_rows(
             scam_type = analysis.scam_type if analysis.scam_type in known_types else "other"
         rows.append(
             {
-                "id": f"fb-{analysis.public_id}",
+                "id": row_id,
                 "text": analysis.anonymized_text,
                 "language": analysis.language,
                 "label": label,
@@ -117,6 +133,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--days", type=int, default=365, help="only analyses from the last N days")
     parser.add_argument("--min-votes", type=int, default=1)
     parser.add_argument(
+        "--labels-dir",
+        type=Path,
+        default=None,
+        help="skip messages already saved in reviewed files here (default: data/labels/)",
+    )
+    parser.add_argument(
         "--confirmed-safe-as-legit",
         action="store_true",
         help="label Safe verdicts that users confirmed as legit",
@@ -134,6 +156,7 @@ def main(argv: list[str] | None = None) -> int:
                 since=utcnow() - timedelta(days=args.days),
                 min_votes=args.min_votes,
                 confirmed_safe_as_legit=args.confirmed_safe_as_legit,
+                skip_ids=reviewed_ids(args.labels_dir),
             )
     finally:
         engine.dispose()
@@ -141,7 +164,7 @@ def main(argv: list[str] | None = None) -> int:
     for reason, count in sorted(summary.skipped.items()):
         print(f"skipped {count}: {reason}")
     if not rows:
-        print("No feedback with a usable label yet; nothing written.")
+        print("No new feedback with a usable label; nothing written.")
         return 0
 
     frame = pd.DataFrame(rows, columns=COLUMNS)
@@ -151,10 +174,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
+    frame[KEEP_COLUMN] = "yes"
     args.output.parent.mkdir(parents=True, exist_ok=True)
     frame.to_csv(args.output, index=False)
     print(f"Wrote {len(rows)} rows to {args.output}: {dict(summary.exported)}")
-    print("Review them, then add the file to `python -m ml.prepare_data --input ...`.")
+    print("Review it (set keep to no for wrong rows), then save it in data/labels/.")
     return 0
 
 

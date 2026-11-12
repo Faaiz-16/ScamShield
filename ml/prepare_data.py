@@ -1,6 +1,7 @@
 """Validate, anonymise, deduplicate and split labelled CSV files.
 
 Usage:
+    python -m ml.prepare_data                       # seed sample + every file in data/labels/
     python -m ml.prepare_data --input data/seed_sample.csv data/raw/my_messages.csv
 """
 
@@ -20,6 +21,7 @@ from ml.dataset import (
     deduplicate,
     describe,
     load_dataset,
+    reviewed_label_files,
     split_dataset,
     validate_dataset,
 )
@@ -27,7 +29,13 @@ from ml.dataset import (
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--input", nargs="+", type=Path, default=[SEED_DATA_PATH])
+    parser.add_argument(
+        "--input",
+        nargs="+",
+        type=Path,
+        default=[SEED_DATA_PATH, *reviewed_label_files()],
+        help="labelled CSV files (default: the seed sample and every file in data/labels/)",
+    )
     parser.add_argument("--output-dir", type=Path, default=PROCESSED_DIR)
     parser.add_argument("--test-size", type=float, default=0.25)
     parser.add_argument("--seed", type=int, default=42)
@@ -61,6 +69,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     (args.output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
+    print("Inputs: " + ", ".join(p.name for p in args.input))
     print(f"Wrote {len(train)} training and {len(test)} test rows to {args.output_dir}")
     print(f"Duplicates dropped: {dropped}")
     print(f"Train labels: {summary['train']['labels']}")

@@ -16,6 +16,14 @@ COLUMNS = ["id", "text", "language", "label", "source", "scam_type"]
 
 SEED_DATA_PATH = BASE_DIR / "data" / "seed_sample.csv"
 PROCESSED_DIR = BASE_DIR / "data" / "processed"
+# Reviewed, anonymised label files (for example exported user feedback). Every CSV here
+# is used for training by default, and is committed so the server trains on it too.
+LABELS_DIR = BASE_DIR / "data" / "labels"
+
+# Optional column in reviewed files: "no" leaves the row out, "yes" or empty keeps it.
+KEEP_COLUMN = "keep"
+_KEEP_YES = {"", "yes", "y"}
+_KEEP_NO = {"no", "n"}
 
 
 class DatasetError(ValueError):
@@ -32,7 +40,33 @@ def load_dataset(path: Path | str) -> pd.DataFrame:
     if not path.exists():
         raise DatasetError(f"{path}: file not found")
     frame = pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8")
-    return validate_dataset(frame, source_name=str(path))
+    return validate_dataset(drop_rejected(frame, str(path)), source_name=str(path))
+
+
+def drop_rejected(frame: pd.DataFrame, source_name: str = "dataset") -> pd.DataFrame:
+    """Leave out rows a reviewer marked keep=no. Files without the column are unchanged."""
+    if KEEP_COLUMN not in frame.columns:
+        return frame
+    keep = frame[KEEP_COLUMN].fillna("").astype(str).str.strip().str.lower()
+    unknown = sorted(set(keep) - _KEEP_YES - _KEEP_NO)
+    if unknown:
+        raise DatasetError(f"{source_name}: the keep column must be yes or no, found {unknown}")
+    return frame[~keep.isin(_KEEP_NO)].reset_index(drop=True)
+
+
+def reviewed_label_files(directory: Path | None = None) -> list[Path]:
+    directory = Path(directory or LABELS_DIR)
+    return sorted(directory.glob("*.csv")) if directory.is_dir() else []
+
+
+def reviewed_ids(directory: Path | None = None) -> set[str]:
+    """Ids in every reviewed file, including rows marked keep=no."""
+    ids: set[str] = set()
+    for path in reviewed_label_files(directory):
+        frame = pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8")
+        if "id" in frame.columns:
+            ids.update(value.strip() for value in frame["id"] if value.strip())
+    return ids
 
 
 def validate_dataset(frame: pd.DataFrame, source_name: str = "dataset") -> pd.DataFrame:
